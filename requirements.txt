@@ -2,4 +2,5 @@ streamlit
 pandas
 numpy
 pyomo
+ipopt
 gsheetsdb
