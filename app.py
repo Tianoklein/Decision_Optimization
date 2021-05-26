@@ -17,11 +17,11 @@ model.x = pyo.Var(range(3),bounds=(1,10), within=Integers)
 model.y = pyo.Var(range(3),bounds=(0,10))
 x = model.x
 y = model.y
-model.obj = pyo.Objective(expr = sum(x[i]*y[i] for i in range(3)))
+model.obj = pyo.Objective(expr = sum(x[i]+y[i] for i in range(3)))
 model.c = pyo.Constraint(expr = x[0]>=3)
 
 st.write(model.x.pprint())
-opt = SolverFactory()
+opt = SolverFactory('glpk')
 results = opt.solve(model, tee=True)
 st.write(results)
 
