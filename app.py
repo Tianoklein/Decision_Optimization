@@ -10,10 +10,11 @@ from gsheetsdb import connect
 
 
 st.subheader("IFRAME")
-components.iframe(
-'''
+
+html_temp = '''
 <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQygBicNaTXHGVFdYbK9RooQlexyw2qoe0RDnVv7lh7JvWvwhYz_aB3ARX8s38U96IfPXDZvYCUgKlG/pubhtml?widget=true&amp;headers=false"></iframe>
-''')
+'''
+components.html(html_temp)   
 
 conn = connect()
 # Perform SQL query on the Google Sheet.
