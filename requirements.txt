@@ -1,4 +1,3 @@
-cython
 streamlit
 pandas
 numpy
