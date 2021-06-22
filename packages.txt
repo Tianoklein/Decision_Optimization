@@ -1,5 +1,4 @@
 libglpk-dev 
-python-glpk
 glpk-utils
 gcc
 g++
