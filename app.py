@@ -21,7 +21,7 @@ y = model.y
 model.obj = pyo.Objective(expr = sum(x[i]+y[i] for i in range(3)))
 model.c = pyo.Constraint(expr = x[0]>=3)
 
-print(model.x.pprint('glpk'))
+model.x.pprint('glpk')
 opt = SolverFactory()
 results = opt.solve(model, tee=True)
 st.write(results)
