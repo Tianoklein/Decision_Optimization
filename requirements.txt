@@ -5,5 +5,5 @@ pyomo
 gspread
 glpk
 pkg-config
-Cython
+cython
 ipopt
