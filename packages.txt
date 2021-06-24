@@ -1,3 +1,12 @@
 libglpk-dev 
 glpk-utils
 pkg-config
+gcc 
+g++ 
+gfortran 
+git 
+patch 
+wget 
+pkg-config 
+liblapack-dev 
+libmetis-dev
