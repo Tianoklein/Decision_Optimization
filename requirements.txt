@@ -5,4 +5,5 @@ pyomo
 gspread
 glpk
 cython
+cyipopt
 ipopt
