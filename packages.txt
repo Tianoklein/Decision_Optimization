@@ -1,3 +1,5 @@
 libglpk-dev 
 glpk-utils
 pkg-config
+gcc 
+g++
