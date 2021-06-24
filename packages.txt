@@ -1,4 +1,2 @@
 libglpk-dev 
 glpk-utils
-gcc
-g++
