@@ -1,13 +1,15 @@
 import streamlit as st
 import streamlit.components.v1 as components
+
 import pandas as pd
 import numpy as np
+
 import pyomo.environ as pyo
-import gsheetsdb as gs
 from pyomo.environ import *
 from pyomo.opt import SolverFactory
+
 import time
-from gsheetsdb import connect
+
 
 
 st.title("Prescriptive Analitics")
@@ -28,7 +30,8 @@ model.C4 = pyo.Constraint(expr= 3*x+5*y<=15)
 model.obj = pyo.Objective(expr= -4*x-2*y, sense=minimize)
 
 tempo_inicial = time.time()
-opt = SolverFactory('glpk')
+#opt = SolverFactory('glpk')
+opt = SolverFactory('ipopt')
 results = opt.solve(model, tee=True)
 st.write(results)
 tempo = time.time()-tempo_inicial

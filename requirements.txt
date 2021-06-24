@@ -4,3 +4,4 @@ numpy
 pyomo
 gsheetsdb
 glpk
+ipopt
