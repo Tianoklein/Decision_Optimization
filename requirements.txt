@@ -4,3 +4,4 @@ numpy
 pyomo
 gspread
 glpk
+ipopt
