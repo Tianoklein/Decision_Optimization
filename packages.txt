@@ -1,3 +1,2 @@
 libglpk-dev 
 glpk-utils
-pkg-config

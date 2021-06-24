@@ -4,5 +4,6 @@ numpy
 pyomo
 gspread
 glpk
+pkg-config
 Cython
 ipopt
