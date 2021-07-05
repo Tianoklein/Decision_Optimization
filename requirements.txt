@@ -4,5 +4,3 @@ numpy
 pyomo
 gspread
 glpk
-cython
-ipopt
