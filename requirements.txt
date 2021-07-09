@@ -1,4 +1,5 @@
 streamlit
+locale
 pandas
 numpy
 pyomo
