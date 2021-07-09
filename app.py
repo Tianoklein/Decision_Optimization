@@ -172,22 +172,25 @@ def main():
 
     elif choice == "II - Linha de Produção":
         ###----------------------------------------####
-        st.write("Preencha os valores na planilha abaixo:")
-        st.write("CAPACIDADE: Produção em cada uma das Máquinas em 1 periodo de tempo")
-        st.write("CUSTO: Produção em cada uma Máquina em 1 periodo de tempo")
-        st.write("DEMANDA: Demanda de produtos pelos Clientes")
-        st.write("Frete: Para envio da Quantidade do Produto A pela Máquina X")
+        st.write("Preencha os valores na planilha abaixo. Ex:")
+        col1, col2 = st.beta_columns(2)
+        with col1:
+            st.write("CAPACIDADE: Produção em cada Máquina em 1 periodo de tempo")
+            st.write("CUSTO: Produção em cada uma Máquina em 1 periodo de tempo")
+        with col2:    
+            st.write("DEMANDA: Demanda de produtos pelos Clientes")
+            st.write("FRETE: Valor para envio da Quantidade do Produto A pela Máquina X")
 
         col1, col2 = st.beta_columns(2)
         with col1:
             st_dias = st.number_input('Periodo para Atingir a Demanda:' , value=30)
         with col2:
-             st_containers = st.number_input('Qtd maxima por pacote:',value=25)
+             st_containers = st.number_input('Quantidade maxima de itens por pacote(frete):',value=25)
         
         
         # embed streamlit docs in a streamlit app
         import streamlit.components.v1 as components
-        components.iframe(st.secrets["private_gsheets_url"],width=1300, height=800)
+        components.iframe(st.secrets["private_gsheets_url"],width=1500, height=800)
         
         if st.button("Enviar"):
             ####----------------------------------------####
