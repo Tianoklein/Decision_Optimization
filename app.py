@@ -1,4 +1,5 @@
 # STREAMLIT
+from numpy import empty
 import streamlit as st
 
 # PYOMO
@@ -16,22 +17,24 @@ from google.oauth2 import service_account
 import gspread as gs
 
 import locale
-locale.setlocale(locale.LC_ALL, 'pt_BR')
 
+
+### CONFIGURAÇÕES GERAIS:
+locale.setlocale(locale.LC_ALL, 'pt_BR')
 st.set_page_config(
-     page_title="Prescritive Analytics / Analise de Sugestão",
-     page_icon="🧊",
+     page_title="Prescritive Analytics / Análise de Sugestão",
+     page_icon="random",
      layout="wide",
      initial_sidebar_state="expanded",
 )
 
 
-### ACESSO AS PLANILHAS DO GOOGLE:
-scopes = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+### ACESSO AS PLANILHAS DO GOOGLE: GRACIAS![https://medium.com/pyladiesbh/gspread-trabalhando-com-o-google-sheets-f12e53ed1346]
 def login():
     '''
     FAZ O LOGIN NO GOOGLE DOCS USANDO CREDENCIAIS GCP
     '''
+    scopes = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
     credentials = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
     scoped_credentials = credentials.with_scopes(scopes)
     gc = gs.authorize(scoped_credentials)
@@ -94,8 +97,8 @@ def roda_algoritmo(container, dias):
     model.j = df_demanda.index   ## j=Products
     model.h = df_demanda.keys()  ## h=Customers
 
-    model.x = Var(model.i, model.j,model.h, within=NonNegativeReals) 
-    model.y = Var(model.i, model.j,model.h, bounds=(0,dias),  within=NonNegativeReals)
+    model.x = Var(model.i, model.j,model.h, within=NonNegativeReals)                    ### Quantity
+    model.y = Var(model.i, model.j,model.h, bounds=(0,dias),  within=NonNegativeReals)  ### Days
     model.OF = Var(within=Reals)                  ### Total production Cost
     model.P = Var(model.i,within=Reals)           ### Production by Machin  
     def rule_C0(model, i):
@@ -129,8 +132,8 @@ def roda_algoritmo(container, dias):
     solver = SolverFactory('glpk')
     results = solver.solve(model, tee=True)
     vOF = value(model.OF)
-    print(results)
-    print("OF= ",vOF )
+    #print(results)
+    #print("OF= ",vOF )
 
     df = pd.DataFrame(columns=('Maq','Prod', 'Cliente', 'QtdProduction', 'Days',"VALIDAÇAO","Custo_por_Ton", "Capacidade_Max_por_dia", "Valor_Frete", "QtdContainers", "ValorDeliveryTotal", "Valor Total de Produção SEM FRETE", 'Model OF' ) )
     for i in model.i:
@@ -154,46 +157,63 @@ def roda_algoritmo(container, dias):
 
 
 
-
-
-####INTERFACE:
+#### INTERFACE:
 def main():
-    """"Prescritive Analytics / Analise de Sugestão"""
-    st.title("Prescritive Analytics / Analise de Sugestão")
-    menu = ["HOME", "II - Linha de Produção", "ITEM2", "SOBRE"]
+    st.title("Prescritive Analytics / Análise de Sugestão / Pesquisa Operacional")
+    menu = ["HOME", "I - Linha de Produção Simples", "II - Linha de Produção Elaborada", "III - Carteira de Investimentos", "SOBRE"]
     choice = st.sidebar.selectbox("Menu", menu)
 
 
-
+#### HOME:
     if choice == "HOME":
-        st.subheader("Faz a sugestão de recomendação")
+        st.write("Faz a sugestão de recomendação... Disseminar conhecimento sobre Prescritive Analytics /  Analise de sugestão ou Recomendação")
+        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+        
+        st.subheader("Linha de Produção Simples")
+        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+        
+        st.subheader("Linha de Produção Elaborada")
+        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+
+        st.subheader("Carteira de Investimentos")
+        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+
+
+#### MIX DE PRODUÇÃO - SIMPLES:
+    if choice == "I - Linha de Produção Simples":
+        st.subheader("Faz a sugestão de em uma linha de produção simples: Uma Padaria.")
+        st.write("Objetivo: Demonstrar")
         st.subheader("Recomendação...")
 
+#### MIX DE PRODUÇÃO - ELABORADO:
+    elif choice == "II - Linha de Produção Elaborada":
+        with st.beta_expander("Objetivo:"):
+            st.write("Minimizar o custo de produção incluindo o valor do frete, que é um valor fixo por capacidade maxima por pacote. \n \n \
+- Quantidade de produção x Custo de produção + Valor do Frete por embalagem.  \n  \
+- A demanda precisa ser igual a quantidade que deverá ser produzida  \n \
+- A capacidade de produção diária precisa ser respeitada")
+            st.write("Resultado: É quantidade de dias necessária, bem como a melhor alocação das máquinas, para minimizar o custo de produção da demanda" )
 
-    elif choice == "II - Linha de Produção":
-        ###----------------------------------------####
-        st.write("Preencha os valores na planilha abaixo. Ex:")
-        col1, col2 = st.beta_columns(2)
+        st.write("Preencha os valores na planilha conforme abaixo:")
+        col1, col2, col3 = st.beta_columns(3)
         with col1:
-            st.write("CAPACIDADE: Produção em cada Máquina em 1 periodo de tempo")
-            st.write("CUSTO: Produção em cada uma Máquina em 1 periodo de tempo")
+            st.write("**CAPACIDADE**: Produção em cada Máquina em 1 periodo de tempo")
+            st.write("**CUSTO**: Produção em cada uma Máquina em 1 periodo de tempo")
         with col2:    
-            st.write("DEMANDA: Demanda de produtos pelos Clientes")
-            st.write("FRETE: Valor para envio da Quantidade do Produto A pela Máquina X")
-
-        col1, col2 = st.beta_columns(2)
+            st.write("**DEMANDA**: Demanda de produtos pelos Clientes")
+            st.write("**FRETE**: Valor para envio da Quantidade do Produto A pela Máquina X")
+        
+        col1, col2, col3 = st.beta_columns(3)
         with col1:
             st_dias = st.number_input('Periodo para Atingir a Demanda:' , value=30)
         with col2:
              st_containers = st.number_input('Quantidade maxima de itens por pacote(frete):',value=25)
-        
         
         # embed streamlit docs in a streamlit app
         import streamlit.components.v1 as components
         components.iframe(st.secrets["private_gsheets_url"],width=1500, height=800)
         
         if st.button("Enviar"):
-            ####----------------------------------------####
             st.subheader("DATAFRAME RESULTADO RECOMENDAÇÃO")
             st.write(st_dias)
             st.write(st_containers)
@@ -201,29 +221,44 @@ def main():
             df,vOF =  roda_algoritmo(st_containers, st_dias)
             st.write("Custo total para fabricação da Demanda:", locale.currency(vOF,grouping=True))
             st.dataframe(df)
-
             df.fillna('', inplace=True)
             df_to_spreadsheet("pyomo","RESULTADO",df)
 
-    if choice == "SOBRE":
-        st.subheader("Sobre...")
+
+
+
+#### CARTEIRA DE INVESTIMENTOS:    
+    elif choice == "III - Carteira de Investimentos":
+        st.subheader("Carteira de Investimentos...")    
+
+
+
+#### SOBRE:    
+    elif choice == "SOBRE":
+        col1, col2, col3, col4= st.beta_columns(4)
+        with col1:
+            with st.beta_expander("Fonte"):
+                st.write(
+                        """
+                        - Livros:
+                        - Revistas:
+                        ...
+                        """  )
+
+
+
+        st.subheader("Sobre...\
+                       AAAAA AAAA \
+                        AAAAA")
         if st.button("OBRIGADO!!!"):
             st.balloons()
         
-        st.info("Desenvolvido por Paulo Cristiano Klein, com ajuda de muitos amigos!\n\n"
+        st.info("Desenvolvido por Paulo Cristiano Klein, com ajuda de muitos amigos!\n"
                 "Mantido por [Paulo Klein](https://www.linkedin.com/in/pauloklein/). "
-                  "Me visite também em https://github.com/Tianoklein")
-        
-        html_temp = '''<a href="mailto:tianoklein@hotmail.com?subject=Streamlit NFC-E Parse&body=Tenho uma sugestão: ">  Duvidas, criticas e sugestões </a>'''
-
+                "Me visite também em https://github.com/Tianoklein")
+        html_temp = '''<a href="mailto:tianoklein@hotmail.com?subject=Streamlit DO/PO Parse&body=Tenho uma sugestão: ">  Duvidas, criticas e sugestões </a>'''
         import streamlit.components.v1 as components
-        components.html(html_temp)   
-        
-
+        components.html(html_temp)
 
 if __name__ == '__main__':
     main()
-
-
-
-
