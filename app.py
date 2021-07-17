@@ -227,14 +227,17 @@ def main():
 
             #### GRÁFICOS:
             fig = px.bar(df.groupby(['Maq']).agg({'Days': 'sum'}))
-            fig.update_layout(title = "Utilização das Maquinas")
+            fig.update_layout(title = "Utilização das Maquinas",width=1500, height=800)
             st.plotly_chart(fig)
             fig = px.bar(df, x='Maq', y='QtdProduction', color='Cliente', barmode ='stack')
-            fig.update_layout(title = "Qtd de Produção por Máquina")
+            fig.update_layout(title = "Qtd de Produção por Máquina",width=1500, height=800)
             st.plotly_chart(fig)
             fig = px.bar(df, x='Maq', y='Days', color='Cliente', barmode ='stack')
-            fig.update_layout(title = "Tempo de Producão por Máquina")
+            fig.update_layout(title = "Tempo de Producão por Cliente",width=1500, height=800)
             st.plotly_chart(fig)
+            fig = px.bar(df, x='Maq', y='Days', color='Prod', barmode   ='stack')
+            fig.update_layout(title = "Tempo de Producão por Produto",width=1500, height=800)
+            st.plotly_chart(fig)    
 
 
             
