@@ -1,26 +1,25 @@
 # STREAMLIT
-from numpy import empty
 import streamlit as st
+# DASHBOARD
 import plotly.express as px
+import random
+import time
+from wordcloud import WordCloud
 
+# PANDAS
+import pandas as pd
 # PYOMO
 import pyomo.environ as pyo
 from pyomo.environ import *
 from pyomo.opt import SolverFactory
-
-# PANDAS
-import pandas as pd
-
 # GOOGLE AUTH
 from google.oauth2 import service_account
-
 # GSPREAD
 import gspread as gs
-
+# CURRENCY
 import locale
 
-
-### CONFIGURAÇÕES GERAIS:
+### CONFIGS:
 locale.setlocale(locale.LC_ALL, 'pt_BR')
 st.set_page_config(
      page_title="Prescritive Analytics / Análise de Sugestão",
@@ -29,8 +28,9 @@ st.set_page_config(
      initial_sidebar_state="expanded",
 )
 
+### ACESSO AS PLANILHAS DO GOOGLE: 
+##GRACIAS![https://medium.com/pyladiesbh/gspread-trabalhando-com-o-google-sheets-f12e53ed1346]
 
-### ACESSO AS PLANILHAS DO GOOGLE: GRACIAS![https://medium.com/pyladiesbh/gspread-trabalhando-com-o-google-sheets-f12e53ed1346]
 def login():
     '''
     FAZ O LOGIN NO GOOGLE DOCS USANDO CREDENCIAIS GCP
@@ -62,7 +62,7 @@ def df_from_spreadsheet(spreadsheets,aba):
     Carrega um Dataframe de uma planilha do GDocs
     spreadsheets = nome da planilha
     aba = Aba do excel
-    retorna: Dataframe
+    retorna: Dataframe previamente formatado
     '''
     gc = login()
     spreadsheet = gc.open(spreadsheets)
@@ -78,6 +78,11 @@ def df_from_spreadsheet(spreadsheets,aba):
     return df
 
 def roda_algoritmo(container, dias):
+    '''
+    roda o algoritmo de sugestao
+    container = quantidade de itens no pacote(frete)
+    dias = quantidade de dias para fabricacao da demanda
+    '''
     ### CAPACIDADE
     df_capacidade = df_from_spreadsheet("pyomo","CAPACIDADE")
     df_capacidade = df_capacidade.fillna(1)
@@ -127,16 +132,15 @@ def roda_algoritmo(container, dias):
                 (model.x[i,j,h] / container) 
                 * 
                 df_frete.loc[i,h]) for i in model.i for j in model.j for h in model.h)
-
     model.C3 = Constraint(rule=rule_OF)
     model.obj1 = Objective(expr=model.OF, sense=minimize)
     solver = SolverFactory('glpk')
     results = solver.solve(model, tee=True)
+    print(results)
     vOF = value(model.OF)
-    #print(results)
     #print("OF= ",vOF )
-
-    df = pd.DataFrame(columns=('Maq','Prod', 'Cliente', 'QtdProduction', 'Days',"VALIDAÇAO","Custo_por_Ton", "Capacidade_Max_por_dia", "Valor_Frete", "QtdContainers", "ValorDeliveryTotal", "Valor Total de Produção SEM FRETE", 'Model OF' ) )
+    columns1=('Maq','Prod', 'Cliente', 'QtdProduction', 'Days',"VALIDAÇAO","Custo_por_Ton", "Capacidade_Max_por_dia", "Valor_Frete", "QtdContainers", "ValorDeliveryTotal", "Valor Total de Produção SEM FRETE", 'Model OF')
+    df = pd.DataFrame(columns = columns1)
     for i in model.i:
         for j in model.j:
             for h in model.h:
@@ -158,7 +162,7 @@ def roda_algoritmo(container, dias):
 
 
 
-#### INTERFACE:
+#### UX:
 def main():
     st.title("Prescritive Analytics / Análise de Sugestão / Pesquisa Operacional")
     menu = ["HOME", "I - Linha de Produção Simples", "II - Linha de Produção Elaborada", "III - Carteira de Investimentos", "SOBRE"]
@@ -167,29 +171,65 @@ def main():
 
 #### HOME:
     if choice == "HOME":
-        st.write("Faz a sugestão de recomendação... Disseminar conhecimento sobre Prescritive Analytics /  Analise de sugestão ou Recomendação")
-        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
-        
-        st.subheader("Linha de Produção Simples")
-        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
-        
-        st.subheader("Linha de Produção Elaborada")
-        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+        st.markdown('''
+                    O objetivo é demonstrar de forma prática os conceitos em torno das soluções que utilizam ferramentas de uma área da 
+                    **Inteligência Artificial** chamada de **Análise de Sugestão**, utilizada para tomada de decisão onde existen grandes quantidade de opções.
+                    ''')
+        with st.beta_expander("Conceitos:"):
+                   st.markdown(
+                  '''
+                   A **Análise de Sugestão/Recomendação/Prescritiva** é utilizada para obtenção da melhor solução de todas as soluções viáveis 
+                   a fim de atingir um objetivo levando em consideração algumas restrições. Um problema de otimização consiste em *maximizar* 
+                   ou *minimizar* uma função objetivo, e encontrar a melhor solução de todas as soluções viáveis.
 
-        st.subheader("Carteira de Investimentos")
-        st.write("Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+                   A tecnologia de **Análise Prescritiva** recomenda ações com base nos resultados desejados, levando em consideração cenários 
+                   específicos, recursos e conhecimento de eventos passados e atuais. Esses insights podem ajudar sua organização à tomar 
+                   melhores decisões e ter maior controle dos resultados  os negócios. A **Análise Prescritiva** fornece às organizações  
+                   recomendações sobre as ações ideais para atingir os objetivos de negócios, como satisfação do cliente, lucros e economia 
+                   de custos.
+
+                   As soluções de **Análise Prescritiva** usam tecnologia de otimização para resolver decisões complexas com milhões de variáveis 
+                   de decisão, restrições e regulagens. Organizações em dos os setores usam análises prescritivas para uma variedade de casos
+                   de uso que abrangem o planejamento estratégico, atividades operacionais e táticas. A **Análise Prescritiva** é a próxima etapa 
+                   no caminho para ações baseadas em  insights. Ele cria valor por meio da  sinergia com a **Análise PREDITIVA**, que analisa os 
+                   dados do passado para prever resultados futuros. A **Análise Prescritiva** leva esse insight para o próximo nível, sugerindo a 
+                   maneira ideal de lidar com essa situação futura. Organizações que podem agir rapidamente em condições dinâmicas e tomar decisões 
+                   superiores em ambientes incertos ganham uma forte vantagem competitiva. 
+                   ''' )
+        
+        st.markdown("No Menu a esquerda temos os seguintes exemplos:")
+        st.markdown("Linha de Produção Simples:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+        st.markdown("Linha de Produção Elaborada:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+        st.markdown("Carteira de Investimentos:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
+        #WORDCLOUD
+        #FUNCAO PARA DEFINICAO DA COR:
+        def grey_color_func(word, font_size, position, orientation, random_state=None,**kwargs):
+            return "hsl(0, 0%%, %d%%)" % random.randint(30, 100)
+        text = '"Pesquisa Operacional","Engenharia de Produção","Simulação Estocástica","Otimização Combinatória","Optimization","Prescriptive Analytics","Operations Research","Mathematical Optimization for Business Problems"'
+        # CRIA A IMAGEM COMO WORDCLOUD
+        wordcloud = WordCloud(background_color='black', max_font_size = 40,collocations=False).generate(text)
+        #change the color setting
+        wordcloud.recolor(color_func = grey_color_func)
+        # plot
+        fig = px.imshow(wordcloud)
+        fig.update_layout(coloraxis_showscale=False)
+        fig.update_layout(width=1300, height=800)
+        fig.update_xaxes(showticklabels=False)
+        fig.update_yaxes(showticklabels=False)
+        st.plotly_chart(fig) 
 
 
 #### MIX DE PRODUÇÃO - SIMPLES:
     if choice == "I - Linha de Produção Simples":
         st.subheader("Faz a sugestão de em uma linha de produção simples: Uma Padaria.")
-        st.write("Objetivo: Demonstrar")
+        st.text("Objetivo: Demonstrar")
         st.subheader("Recomendação...")
 
 #### MIX DE PRODUÇÃO - ELABORADO:
     elif choice == "II - Linha de Produção Elaborada":
+        st.subheader("Linha de Produção Elaborada") 
         with st.beta_expander("Objetivo:"):
-            st.write("Minimizar o custo de produção incluindo o valor do frete, que é um valor fixo por capacidade maxima por pacote. \n \n \
+            st.markdown("Minimizar o custo de produção incluindo o valor do frete, que é um valor fixo por capacidade maxima por pacote. \n \n \
 - Quantidade de produção x Custo de produção + Valor do Frete por embalagem.  \n  \
 - A demanda precisa ser igual a quantidade que deverá ser produzida  \n \
 - A capacidade de produção diária precisa ser respeitada")
@@ -206,21 +246,21 @@ def main():
         
         col1, col2, col3 = st.beta_columns(3)
         with col1:
-            st_dias = st.number_input('Periodo para Atingir a Demanda:' , value=30)
+            st_dias = st.number_input('Periodo:', help='Periodo para atingir a demanda. Em dias, por exemplo' , value=30)
         with col2:
-             st_containers = st.number_input('Quantidade maxima de itens por pacote(frete):',value=25)
+             st_containers = st.number_input('Itens por pacote(frete):', help='Quantidade maxima de itens por pacote(frete):',value=25)
         
         # embed streamlit docs in a streamlit app
         import streamlit.components.v1 as components
         components.iframe(st.secrets["private_gsheets_url"],width=1500, height=800)
         
         if st.button("Enviar"):
-            st.subheader("DATAFRAME RESULTADO RECOMENDAÇÃO")
-            st.write(st_dias)
-            st.write(st_containers)
-            ## cria o dataframe com o resultado da sugestao:
-            df,vOF =  roda_algoritmo(st_containers, st_dias)
-            st.write("Custo total para fabricação da Demanda:", locale.currency(vOF,grouping=True))
+            with st.spinner('Processando...'):
+                ## cria o dataframe com o resultado da sugestao:
+                df,vOF =  roda_algoritmo(st_containers, st_dias)
+                st.success('Feito!')
+            
+            st.write("Custo total para fabricação da Demanda - aba Resultado:", locale.currency(vOF,grouping=True))
             st.dataframe(df)
             df.fillna('', inplace=True)
             df_to_spreadsheet("pyomo","RESULTADO",df)
