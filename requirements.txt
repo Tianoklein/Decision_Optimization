@@ -1,6 +1,5 @@
 streamlit
 plotly
-random
 wordcloud
 pandas
 numpy
