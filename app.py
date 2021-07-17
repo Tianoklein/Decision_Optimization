@@ -1,6 +1,7 @@
 # STREAMLIT
 from numpy import empty
 import streamlit as st
+import plotly.express as px
 
 # PYOMO
 import pyomo.environ as pyo
@@ -223,6 +224,21 @@ def main():
             st.dataframe(df)
             df.fillna('', inplace=True)
             df_to_spreadsheet("pyomo","RESULTADO",df)
+
+            #### GRÁFICOS:
+            fig = px.bar(df.groupby(['Maq']).agg({'Days': 'sum'}))
+            fig.update_layout(title = "Utilização das Maquinas")
+            st.plotly_chart(fig)
+            fig = px.bar(df, x='Maq', y='QtdProduction', color='Cliente', barmode ='stack')
+            fig.update_layout(title = "Qtd de Produção por Máquina")
+            st.plotly_chart(fig)
+            fig = px.bar(df, x='Maq', y='Days', color='Cliente', barmode ='stack')
+            fig.update_layout(title = "Tempo de Producão por Máquina")
+            st.plotly_chart(fig)
+
+
+            
+
 
 
 
