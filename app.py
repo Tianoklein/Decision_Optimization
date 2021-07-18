@@ -3,7 +3,6 @@ import streamlit as st
 # DASHBOARD
 import plotly.express as px
 import random
-import time
 from wordcloud import WordCloud
 
 # PANDAS
@@ -137,6 +136,7 @@ def roda_algoritmo(container, dias):
     solver = SolverFactory('glpk')
     results = solver.solve(model, tee=True)
     print(results)
+    print("RESULTADO:", results.solver.termination_condition)
     vOF = value(model.OF)
     #print("OF= ",vOF )
     columns1=('Maq','Prod', 'Cliente', 'QtdProduction', 'Days',"VALIDAÇAO","Custo_por_Ton", "Capacidade_Max_por_dia", "Valor_Frete", "QtdContainers", "ValorDeliveryTotal", "Valor Total de Produção SEM FRETE", 'Model OF')
@@ -221,9 +221,93 @@ def main():
 
 #### MIX DE PRODUÇÃO - SIMPLES:
     if choice == "I - Linha de Produção Simples":
-        st.subheader("Faz a sugestão de em uma linha de produção simples: Uma Padaria.")
-        st.text("Objetivo: Demonstrar")
-        st.subheader("Recomendação...")
+        st.subheader("Produção de BOLOS e TORTAS em uma Padaria")
+        st.write('''
+        Quantos Bolos e Tortas devem ser feitos para maximizar o lucro desses dois produtos sob determinadas condições?
+        ''')
+        image = "https://bimbon-assets.s3.amazonaws.com/ckeditor/picture/data/52701fe1f369336f5300063f/content_Przystanek_bimbon03.jpg"
+        st.image(image, width=400,)
+        with st.beta_expander("Regras de Negócio:"):
+            st.markdown(
+                  '''
+                  Uma padaria faz bolos e tortas todos os periodos. Há: 1 forno, 2 padeiros, 1 empacotador que trabalha apenas 22 periodos. 
+                  O bolo requer o uso do forno por 1 periodo e a torta requer 0,5 periodo. Cada padeiro precisa trabalhar para o bolo 0,5 pariodos e para torta 2 periodos. 
+                  O empacotador precisa trabalhar para o bolo 1 periodo e a torta 0,5 periodo. O lucro em cada bolo é R$ 15,00 e o lucro em cada torta é R$ 12,00. 
+                   
+                Exemplo de valores:
+                    - 1 FORNO
+                    - 2 PADEIRO
+                    - 1 EMPACOTADOR que trabala 22 periodos.
+                Tempo de Preparo:                    
+                    - FORNO      = BOLO 1 + TORTA 0.5 <=30 periodos
+                    - PADEIRO    = BOLO 0.5 + TORTA 2.0 <=60 DIAS
+                    - EMPACOTAOR = BOLO 1.O + TORTA 0.5 <=22 DIAS
+                    - LUCRO BOLO = 15
+                    - LUCRO TORTA = 12
+        Objetivo: Maximizar os Lucros com os dois produtos na linha de produção
+                  ''')
+
+        st.write("Quantidade de produtos já vendidos:")
+        col1, col2,col3 = st.beta_columns(3)
+        with col1:
+            minBOLO = st.number_input('Qtd min BOLO:', help='Fabricação mimima de Bolo - já demandada' , value=0)
+        with col2:
+            minTORTA = st.number_input('Qtd min TORTA:',  help='Fabricação mimima de Bolo - já demandada' , value=0)          
+
+        st.write("LUCRO:")
+        col1, col2,col3 = st.beta_columns(3)
+        with col1:
+            LucroBOLO = st.number_input('BOLO - Margem de Lucro:', help='Margem de Lucro do Bolo' , value=15.00, format="%.2f")
+        with col2:
+            LucroTORTA = st.number_input('TORTA - Margem de Lucro:',  help='Margem de Lucro do Torta' , value=12.00, format="%.2f")
+
+        st.write("Restrições/Condições:")
+        col1, col2, col3 = st.beta_columns(3)
+        with col1:
+            pFORNO = st.number_input('FORNO:', help='Disponibilidade de tempo do FORNO em periodos' , value=30)
+        with col2:
+             pPADEIRO = st.number_input('PADEIRO:', help='Disponibilidade de tempo do PADEIRO em periodos:', value=60)
+        with col3:
+             pEMPACOTADOR = st.number_input('EMPACOTADOR:', help='Disponibilidade de tempo do EMPACOTADOR em periodos:', value=22)
+
+        if st.button("Enviar"):
+            model = ConcreteModel()
+            ##### dual
+            model.dual = Suffix(direction=Suffix.IMPORT)
+
+            ## VARIAVEIS DE DECISAO: ---------------------------------
+            BOLO  = model.BOLO = pyo.Var(within=PositiveReals)
+            TORTA = model.TORTA = pyo.Var(within=PositiveReals)
+
+            ## CONSTRAINTS: ---------------------------------
+            model.FORNO = pyo.Constraint(expr= 1*BOLO + 0.5*TORTA <= pFORNO)
+            model.PADEIRO = pyo.Constraint(expr= 0.5*BOLO + 2*TORTA <= pPADEIRO)
+            model.EMPACOTADOR = pyo.Constraint(expr= 1*BOLO + 0.5*TORTA <= pEMPACOTADOR)
+            model.minBOLO = pyo.Constraint(expr= BOLO >= minBOLO)
+            model.minTORTA = pyo.Constraint(expr= TORTA >= minTORTA)
+
+            model.obj = pyo.Objective(expr= LucroBOLO*BOLO +LucroTORTA*TORTA, sense=maximize)
+            model.pprint()
+            
+            solver = SolverFactory('glpk')
+            results = solver.solve(model, tee=True)
+            st.write("A solução encontrada é: ", results.solver.termination_condition)
+            with st.beta_expander(" DUAL:"):
+                st.write("Constraint  value  lslack  uslack    dual")
+                for c in [model.FORNO, model.PADEIRO, model.EMPACOTADOR]:
+                    st.write(c, c(), c.lslack(), c.uslack(), model.dual[c])
+
+            # print(results)
+            st.write("Para obter o maior lucro a sugestão de fábricação é:")
+            st.write("BOLO:",pyo.value(BOLO),"TORTA é:",pyo.value(TORTA) )
+            st.write("LUCRO esperado será:", pyo.value(model.obj))
+            with st.beta_expander("Explicação:"):
+                st.write( '(', LucroBOLO,' X ', pyo.value(BOLO) , ") + (" , LucroTORTA,' X ',pyo.value(TORTA) ,' = ', pyo.value(model.obj),')')
+
+
+
+
+
 
 #### MIX DE PRODUÇÃO - ELABORADO:
     elif choice == "II - Linha de Produção Elaborada":
