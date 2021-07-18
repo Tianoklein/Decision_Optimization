@@ -178,7 +178,7 @@ def main():
         with st.beta_expander("Conceitos:"):
                    st.markdown(
                   '''
-                   A **Análise de Sugestão/Recomendação/Prescritiva** é utilizada para obtenção da melhor solução de todas as soluções viáveis 
+                    A **Análise de Sugestão/Recomendação/Prescritiva** é utilizada para obtenção da melhor solução de todas as soluções viáveis 
                    a fim de atingir um objetivo levando em consideração algumas restrições. Um problema de otimização consiste em *maximizar* 
                    ou *minimizar* uma função objetivo, e encontrar a melhor solução de todas as soluções viáveis.
 
@@ -197,12 +197,13 @@ def main():
                    superiores em ambientes incertos ganham uma forte vantagem competitiva. 
                    ''' )
         
-        st.markdown("No Menu a esquerda temos os seguintes exemplos:")
-        st.markdown("Linha de Produção Simples:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
-        st.markdown("Linha de Produção Elaborada:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
-        st.markdown("Carteira de Investimentos:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão")
-        #WORDCLOUD
-        #FUNCAO PARA DEFINICAO DA COR:
+        st.markdown("No Menu tem os seguintes exemplos:")
+        st.markdown("   Linha de Produção Simples:  \n Objetivo: Exemplo simples de uma padaria para demostrar o potencial de soluções que utilizam PO para tomada de decisão")
+        st.markdown("   Linha de Produção Elaborada:  \n Objetivo: Exemplo mais complexo, para Minimizar o custo de produção de vários produtos.")
+        st.markdown("   Carteira de Investimentos:  \n Objetivo: Demonstrar o potencial de soluções que utilizam PO para tomada de decisão sugerindo ações para montar carteira de investimentos.")
+        
+        # WORDCLOUD
+        # FUNCAO PARA DEFINICAO DA COR:
         def grey_color_func(word, font_size, position, orientation, random_state=None,**kwargs):
             return "hsl(0, 0%%, %d%%)" % random.randint(30, 100)
         text = '"Pesquisa Operacional","Engenharia de Produção","Simulação Estocástica","Otimização Combinatória","Optimization","Prescriptive Analytics","Operations Research","Mathematical Optimization for Business Problems"'
@@ -226,7 +227,7 @@ def main():
         Quantos Bolos e Tortas devem ser feitos para maximizar o lucro desses dois produtos sob determinadas condições?
         ''')
         image = "https://bimbon-assets.s3.amazonaws.com/ckeditor/picture/data/52701fe1f369336f5300063f/content_Przystanek_bimbon03.jpg"
-        st.image(image, width=400,)
+        st.image(image, width=370,)
         with st.beta_expander("Regras de Negócio:"):
             st.markdown(
                   '''
@@ -239,36 +240,56 @@ def main():
                     - 2 PADEIRO
                     - 1 EMPACOTADOR que trabala 22 periodos.
                 Tempo de Preparo:                    
-                    - FORNO      = BOLO 1 + TORTA 0.5 <=30 periodos
-                    - PADEIRO    = BOLO 0.5 + TORTA 2.0 <=60 DIAS
-                    - EMPACOTAOR = BOLO 1.O + TORTA 0.5 <=22 DIAS
+                    - FORNO      = BOLO 1 periodo   + TORTA 0.5 periodo  <=30 periodos
+                    - PADEIRO    = BOLO 0.5 periodo + TORTA 2.0 periodo  <=60 periodos ( 2 padeiros)
+                    - EMPACOTAOR = BOLO 1.O periodo + TORTA 0.5 periodo  <=22 periodos
                     - LUCRO BOLO = 15
                     - LUCRO TORTA = 12
         Objetivo: Maximizar os Lucros com os dois produtos na linha de produção
                   ''')
 
-        st.write("Quantidade de produtos já vendidos:")
-        col1, col2,col3 = st.beta_columns(3)
-        with col1:
-            minBOLO = st.number_input('Qtd min BOLO:', help='Fabricação mimima de Bolo - já demandada' , value=0)
-        with col2:
-            minTORTA = st.number_input('Qtd min TORTA:',  help='Fabricação mimima de Bolo - já demandada' , value=0)          
+        with st.beta_expander("Quantidade de produtos já vendidas dos produtos:"):
 
-        st.write("LUCRO:")
-        col1, col2,col3 = st.beta_columns(3)
-        with col1:
-            LucroBOLO = st.number_input('BOLO - Margem de Lucro:', help='Margem de Lucro do Bolo' , value=15.00, format="%.2f")
-        with col2:
-            LucroTORTA = st.number_input('TORTA - Margem de Lucro:',  help='Margem de Lucro do Torta' , value=12.00, format="%.2f")
+            col1, col2,col3 = st.beta_columns(3)
+            with col1:
+                minBOLO = st.number_input('BOLO - Qtd min :', help='Fabricação mimima de Bolo - já demandada' , value=0)
+            with col2:
+                minTORTA = st.number_input('TORTA - Qtd min:',  help='Fabricação mimima de Bolo - já demandada' , value=0)          
+        with st.beta_expander("Valor de lucro  dos produtos:"):
+            st.write("LUCRO:")
+            col1, col2,col3 = st.beta_columns(3)
+            with col1:
+                LucroBOLO = st.number_input('BOLO - Margem de Lucro:', help='Margem de Lucro do Bolo' , value=15.00, format="%.2f")
+            with col2:
+                LucroTORTA = st.number_input('TORTA - Margem de Lucro:',  help='Margem de Lucro do Torta' , value=12.00, format="%.2f")
+        with st.beta_expander("Restrições/Condições que precisam ser respeitadas:"):
+            st.write("Capacidade - BOLO:")
+            col1, col2, col3 = st.beta_columns(3)
+            with col1:
+                pFORNO = st.number_input('FORNO - Capacidade:', help='Capacidade máxima de tempo do FORNO em periodos' , value=30)
+            with col2:
+                pPADEIRO = st.number_input('PADEIRO - Capacidade:', help='Capacidade máxima de tempo do PADEIRO em periodos:', value=60)
+            with col3:
+                pEMPACOTADOR = st.number_input('EMPACOTADOR - Capacidade:', help='Capacidade máxima de tempo do EMPACOTADOR em periodos:', value=22)
+            
+            st.write("Tempo de preparo - BOLO:")
+            col1, col2, col3 = st.beta_columns(3)
+            with col1:
+                tFORNOBOLO = st.number_input('BOLO/FORNO - Tempo:', help='Tempo de preparo em periodos' ,  value=1.00, format="%.2f")
+            with col2:
+                tPADEIROBOLO = st.number_input('BOLO/PADEIRO - Tempo:', help='Tempo de preparo em periodos:',  value=0.50, format="%.2f")
+            with col3:
+                tEMPACOTADORBOLO = st.number_input('BOLO/EMPACOTADOR - Tempo:', help='Tempo de preparo em periodos:',  value=1.00, format="%.2f")
+            
+            st.write("Tempo de preparo - TORTA:")
+            col1, col2, col3 = st.beta_columns(3)
+            with col1:
+                tFORNOTORTA = st.number_input('TORTA/FORNO - Tempo:', help='Tempo de preparo em periodos' ,  value=0.50, format="%.2f")
+            with col2:
+                tPADEIROTORTA = st.number_input('TORTA/PADEIRO - Tempo:', help='Tempo de preparo em periodos:',  value=2.00, format="%.2f")
+            with col3:
+                tEMPACOTADORTORTA = st.number_input('TORTA/EMPACOTADOR - Tempo:', help='Tempo de preparo em periodos:',  value=0.50, format="%.2f")
 
-        st.write("Restrições/Condições:")
-        col1, col2, col3 = st.beta_columns(3)
-        with col1:
-            pFORNO = st.number_input('FORNO:', help='Disponibilidade de tempo do FORNO em periodos' , value=30)
-        with col2:
-             pPADEIRO = st.number_input('PADEIRO:', help='Disponibilidade de tempo do PADEIRO em periodos:', value=60)
-        with col3:
-             pEMPACOTADOR = st.number_input('EMPACOTADOR:', help='Disponibilidade de tempo do EMPACOTADOR em periodos:', value=22)
 
         if st.button("Enviar"):
             model = ConcreteModel()
@@ -280,11 +301,11 @@ def main():
             TORTA = model.TORTA = pyo.Var(within=PositiveReals)
 
             ## CONSTRAINTS: ---------------------------------
-            model.FORNO = pyo.Constraint(expr= 1*BOLO + 0.5*TORTA <= pFORNO)
-            model.PADEIRO = pyo.Constraint(expr= 0.5*BOLO + 2*TORTA <= pPADEIRO)
-            model.EMPACOTADOR = pyo.Constraint(expr= 1*BOLO + 0.5*TORTA <= pEMPACOTADOR)
-            model.minBOLO = pyo.Constraint(expr= BOLO >= minBOLO)
-            model.minTORTA = pyo.Constraint(expr= TORTA >= minTORTA)
+            model.FORNO =       pyo.Constraint(expr= tFORNOBOLO * BOLO + tFORNOTORTA * TORTA <= pFORNO)
+            model.PADEIRO =     pyo.Constraint(expr= tPADEIROBOLO * BOLO + tPADEIROTORTA * TORTA <= pPADEIRO)
+            model.EMPACOTADOR = pyo.Constraint(expr= tEMPACOTADORBOLO *BOLO + tEMPACOTADORTORTA * TORTA <= pEMPACOTADOR)
+            model.minBOLO =     pyo.Constraint(expr= BOLO >= minBOLO)
+            model.minTORTA =    pyo.Constraint(expr= TORTA >= minTORTA)
 
             model.obj = pyo.Objective(expr= LucroBOLO*BOLO +LucroTORTA*TORTA, sense=maximize)
             model.pprint()
@@ -293,7 +314,7 @@ def main():
             results = solver.solve(model, tee=True)
             st.write("A solução encontrada é: ", results.solver.termination_condition)
             with st.beta_expander(" DUAL:"):
-                st.write("Constraint  value  lslack  uslack    dual")
+                st.write("Capacidade semelhantes que daram o mesmo resulado:")
                 for c in [model.FORNO, model.PADEIRO, model.EMPACOTADOR]:
                     st.write(c, c(), c.lslack(), c.uslack(), model.dual[c])
 
@@ -303,10 +324,6 @@ def main():
             st.write("LUCRO esperado será:", pyo.value(model.obj))
             with st.beta_expander("Explicação:"):
                 st.write( '(', LucroBOLO,' X ', pyo.value(BOLO) , ") + (" , LucroTORTA,' X ',pyo.value(TORTA) ,' = ', pyo.value(model.obj),')')
-
-
-
-
 
 
 #### MIX DE PRODUÇÃO - ELABORADO:
@@ -332,7 +349,7 @@ def main():
         with col1:
             st_dias = st.number_input('Periodo:', help='Periodo para atingir a demanda. Em dias, por exemplo' , value=30)
         with col2:
-             st_containers = st.number_input('Itens por pacote(frete):', help='Quantidade maxima de itens por pacote(frete):',value=25)
+             st_containers = st.number_input('Itens por pacote(frete):', help='Quantidade maxima de itens por pacote(frete):',value=2.50, format="%.2f")
         
         # embed streamlit docs in a streamlit app
         import streamlit.components.v1 as components
@@ -365,14 +382,12 @@ def main():
 
 
             
-
-
-
-
-
 #### CARTEIRA DE INVESTIMENTOS:    
     elif choice == "III - Carteira de Investimentos":
-        st.subheader("Carteira de Investimentos...")    
+        st.subheader("Carteira de Investimentos... em contrução.")    
+
+
+
 
 
 
@@ -383,25 +398,21 @@ def main():
             with st.beta_expander("Fonte"):
                 st.write(
                         """
-                        - Livros:
-                        - Revistas:
-                        ...
+                        Livros: 
+                        - Pyomo Documentation - Release 5.7.1.dev0  - Aug 17, 2020 
+                        - Pesquisa Operacional para Cursos de Engenharia - Patrícia Belfiore & Luiz Paulo Fávero 
+                        - ...
                         """  )
-
-
-
-        st.subheader("Sobre...\
-                       AAAAA AAAA \
-                        AAAAA")
-        if st.button("OBRIGADO!!!"):
-            st.balloons()
-        
+       
         st.info("Desenvolvido por Paulo Cristiano Klein, com ajuda de muitos amigos!\n"
                 "Mantido por [Paulo Klein](https://www.linkedin.com/in/pauloklein/). "
                 "Me visite também em https://github.com/Tianoklein")
+        if st.button("OBRIGADO!!!"):
+            st.balloons()
         html_temp = '''<a href="mailto:tianoklein@hotmail.com?subject=Streamlit DO/PO Parse&body=Tenho uma sugestão: ">  Duvidas, criticas e sugestões </a>'''
         import streamlit.components.v1 as components
         components.html(html_temp)
+
 
 if __name__ == '__main__':
     main()
