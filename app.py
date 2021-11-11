@@ -175,7 +175,7 @@ def main():
                     O objetivo é demonstrar de forma prática os conceitos em torno das soluções que utilizam ferramentas de uma área da 
                     **Inteligência Artificial** chamada de **Análise de Sugestão**, utilizada para tomada de decisão onde existen grandes quantidade de opções.
                     ''')
-        with st.beta_expander("Conceitos:"):
+        with st.expander("Conceitos:"):
                    st.markdown(
                   '''
                     A **Análise de Sugestão/Recomendação/Prescritiva** é utilizada para obtenção da melhor solução de todas as soluções viáveis 
@@ -228,7 +228,7 @@ def main():
         ''')
         image = "https://bimbon-assets.s3.amazonaws.com/ckeditor/picture/data/52701fe1f369336f5300063f/content_Przystanek_bimbon03.jpg"
         st.image(image, width=370,)
-        with st.beta_expander("Regras de Negócio:"):
+        with st.expander("Regras de Negócio:"):
             st.markdown(
                   '''
                   Uma padaria faz bolos e tortas todos os periodos. Há: 1 forno, 2 padeiros, 1 empacotador que trabalha apenas 22 periodos. 
@@ -248,21 +248,21 @@ def main():
         Objetivo: Maximizar os Lucros com os dois produtos na linha de produção
                   ''')
 
-        with st.beta_expander("Quantidade de produtos já vendidas dos produtos:"):
+        with st.expander("Quantidade de produtos já vendidas dos produtos:"):
 
             col1, col2,col3 = st.beta_columns(3)
             with col1:
                 minBOLO = st.number_input('BOLO - Qtd min :', help='Fabricação mimima de Bolo - já demandada' , value=0)
             with col2:
                 minTORTA = st.number_input('TORTA - Qtd min:',  help='Fabricação mimima de Bolo - já demandada' , value=0)          
-        with st.beta_expander("Valor de lucro  dos produtos:"):
+        with st.expander("Valor de lucro  dos produtos:"):
             st.write("LUCRO:")
             col1, col2,col3 = st.beta_columns(3)
             with col1:
                 LucroBOLO = st.number_input('BOLO - Margem de Lucro:', help='Margem de Lucro do Bolo' , value=15.00, format="%.2f")
             with col2:
                 LucroTORTA = st.number_input('TORTA - Margem de Lucro:',  help='Margem de Lucro do Torta' , value=12.00, format="%.2f")
-        with st.beta_expander("Restrições/Condições que precisam ser respeitadas:"):
+        with st.expander("Restrições/Condições que precisam ser respeitadas:"):
             st.write("Capacidade - BOLO:")
             col1, col2, col3 = st.beta_columns(3)
             with col1:
@@ -313,7 +313,7 @@ def main():
             solver = SolverFactory('glpk')
             results = solver.solve(model, tee=True)
             st.write("A solução encontrada é: ", results.solver.termination_condition)
-            with st.beta_expander(" DUAL:"):
+            with st.expander(" DUAL:"):
                 st.write("Capacidade semelhantes que daram o mesmo resulado:")
                 for c in [model.FORNO, model.PADEIRO, model.EMPACOTADOR]:
                     st.write(c, c(), c.lslack(), c.uslack(), model.dual[c])
@@ -322,14 +322,14 @@ def main():
             st.write("Para obter o maior lucro a sugestão de fábricação é:")
             st.write("BOLO:",pyo.value(BOLO),"TORTA é:",pyo.value(TORTA) )
             st.write("LUCRO esperado será:", pyo.value(model.obj))
-            with st.beta_expander("Explicação:"):
+            with st.expander("Explicação:"):
                 st.write( '(', LucroBOLO,' X ', pyo.value(BOLO) , ") + (" , LucroTORTA,' X ',pyo.value(TORTA) ,' = ', pyo.value(model.obj),')')
 
 
 #### MIX DE PRODUÇÃO - ELABORADO:
     elif choice == "II - Linha de Produção Elaborada":
         st.subheader("Linha de Produção Elaborada") 
-        with st.beta_expander("Objetivo:"):
+        with st.expander("Objetivo:"):
             st.markdown("Minimizar o custo de produção incluindo o valor do frete, que é um valor fixo por capacidade maxima por pacote. \n \n \
 - Quantidade de produção x Custo de produção + Valor do Frete por embalagem.  \n  \
 - A demanda precisa ser igual a quantidade que deverá ser produzida  \n \
@@ -395,7 +395,7 @@ def main():
     elif choice == "SOBRE":
         col1, col2, col3, col4= st.beta_columns(4)
         with col1:
-            with st.beta_expander("Fonte"):
+            with st.expander("Fonte"):
                 st.write(
                         """
                         Livros: 
