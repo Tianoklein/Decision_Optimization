@@ -250,21 +250,21 @@ def main():
 
         with st.expander("Quantidade de produtos já vendidas dos produtos:"):
 
-            col1, col2,col3 = st.beta_columns(3)
+            col1, col2,col3 = st.columns(3)
             with col1:
                 minBOLO = st.number_input('BOLO - Qtd min :', help='Fabricação mimima de Bolo - já demandada' , value=0)
             with col2:
                 minTORTA = st.number_input('TORTA - Qtd min:',  help='Fabricação mimima de Bolo - já demandada' , value=0)          
         with st.expander("Valor de lucro  dos produtos:"):
             st.write("LUCRO:")
-            col1, col2,col3 = st.beta_columns(3)
+            col1, col2,col3 = st.columns(3)
             with col1:
                 LucroBOLO = st.number_input('BOLO - Margem de Lucro:', help='Margem de Lucro do Bolo' , value=15.00, format="%.2f")
             with col2:
                 LucroTORTA = st.number_input('TORTA - Margem de Lucro:',  help='Margem de Lucro do Torta' , value=12.00, format="%.2f")
         with st.expander("Restrições/Condições que precisam ser respeitadas:"):
             st.write("Capacidade - BOLO:")
-            col1, col2, col3 = st.beta_columns(3)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 pFORNO = st.number_input('FORNO - Capacidade:', help='Capacidade máxima de tempo do FORNO em periodos' , value=30)
             with col2:
@@ -273,7 +273,7 @@ def main():
                 pEMPACOTADOR = st.number_input('EMPACOTADOR - Capacidade:', help='Capacidade máxima de tempo do EMPACOTADOR em periodos:', value=22)
             
             st.write("Tempo de preparo - BOLO:")
-            col1, col2, col3 = st.beta_columns(3)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 tFORNOBOLO = st.number_input('BOLO/FORNO - Tempo:', help='Tempo de preparo em periodos' ,  value=1.00, format="%.2f")
             with col2:
@@ -282,7 +282,7 @@ def main():
                 tEMPACOTADORBOLO = st.number_input('BOLO/EMPACOTADOR - Tempo:', help='Tempo de preparo em periodos:',  value=1.00, format="%.2f")
             
             st.write("Tempo de preparo - TORTA:")
-            col1, col2, col3 = st.beta_columns(3)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 tFORNOTORTA = st.number_input('TORTA/FORNO - Tempo:', help='Tempo de preparo em periodos' ,  value=0.50, format="%.2f")
             with col2:
@@ -337,7 +337,7 @@ def main():
             st.write("Resultado: É quantidade de dias necessária, bem como a melhor alocação das máquinas, para minimizar o custo de produção da demanda" )
 
         st.write("Preencha os valores na planilha conforme abaixo:")
-        col1, col2, col3 = st.beta_columns(3)
+        col1, col2, col3 = st.columns(3)
         with col1:
             st.write("**CAPACIDADE**: Produção em cada Máquina em 1 periodo de tempo")
             st.write("**CUSTO**: Produção em cada uma Máquina em 1 periodo de tempo")
@@ -345,7 +345,7 @@ def main():
             st.write("**DEMANDA**: Demanda de produtos pelos Clientes")
             st.write("**FRETE**: Valor para envio da Quantidade do Produto A pela Máquina X")
         
-        col1, col2, col3 = st.beta_columns(3)
+        col1, col2, col3 = st.columns(3)
         with col1:
             st_dias = st.number_input('Periodo:', help='Periodo para atingir a demanda. Em dias, por exemplo' , value=30)
         with col2:
@@ -393,7 +393,7 @@ def main():
 
 #### SOBRE:    
     elif choice == "SOBRE":
-        col1, col2, col3, col4= st.beta_columns(4)
+        col1, col2, col3, col4= st.columns(4)
         with col1:
             with st.expander("Fonte"):
                 st.write(
